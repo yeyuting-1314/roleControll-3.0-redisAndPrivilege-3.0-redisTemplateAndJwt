@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="select.system.dao.RoleMapper">
+    <resultMap id="RoleMap" type="select.system.dto.Role">
+
+        <result property="id" column="id"/>
+        <result property="role_name" column="roleName"/>
+        <result property="role" column="role"/>
+
+    </resultMap>
+
+    <select id="selectOne" resultMap="RoleMap">
+        select * from sys_role where id = #{id}
+    </select>
+
+    <select id="selectByPrivilegeUrl" resultMap="RoleMap">
+        select sr.* from sys_role sr
+        left join sys_role_privilege srp on sr.id = srp.role_id
+        left join sys_privilege sp on sp.id = srp.privilege_id
+        where sp.privilege_url = #{privilegeUrl}
+    </select>
+
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="select.system.dao.UserMapper">
+    <resultMap id="UserMap" type="select.system.dto.User">
+        <id property="id" column="id"/>
+        <id property="userName" column="username"/>
+        <id property="password" column="password"/>
+    </resultMap>
+
+    <select id="selectByName" resultType="User">
+        select * from sys_user where username = #{userName}
+    </select>
+
+    <select id="selectById" resultType="User">
+        select * from sys_user where id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="User">
+        select * from sys_user
+    </select>
+
+    <insert id="insertOne">
+        insert sys_user values(#{id} , #{userName} , #{password})
+    </insert>
+
+    <insert id="insertMany">
+    insert into sys_user(id,username,password)
+    values
+    <foreach collection="list" item="user" index="index" separator=",">
+        (#{user.id} , #{user.userName},#{user.password})
+    </foreach>
+    </insert>
+
+    <update id="updateOne">
+        update sys_user set username = #{userName} where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from sys_user where id = #{id}
+    </delete>
+
+    <select id="SelectByStartIndexAndPageSize" resultType="User">
+        select * from sys_user  limit #{param1} , #{param2}
+    </select>
+
+    <select id="selectByMap" resultType="User">
+        select * from sys_user limit #{startIndex} , #{pageSize}
+    </select>
+
+    <select id="SelectByPageBean" resultType="User">
+        select * from sys_user limit #{startIndex} , #{pageSize}
+    </select>
+
+    <select id="selectByLike" resultType="User">
+        select * from sys_user
+        where username like "%"#{keywords}"%"
+        limit #{startIndex} , #{pageSize}
+    </select>
+
+    <resultMap id="userMap1" extends="UserMap" type="select.system.dto.User">
+        <collection property="privilegeList" ofType="select.system.dto.Privilege">
+            <result property="id" column="id"/>
+            <result property="privilegeName" column="privilege_name"/>
+            <result property="privilegeUrl" column="privilege_url"/>
+        </collection>
+
+    </resultMap>
+    <select id="selectPrivilegesByUserName" resultMap="userMap1">
+        SELECT su.id , su.username , su.password ,
+        sp.id ,
+        sp.privilege_name ,
+        sp.privilege_url
+        from selectFuPan.sys_privilege sp
+        left join selectFuPan.sys_role_privilege srp on sp.id  = srp.privilege_id
+        left join selectFuPan.sys_role sr on srp.role_id  = sr.id
+        left join selectFuPan.sys_user_role sur on sr.id = sur.role_id
+        left join selectFuPan.sys_user su on sur.user_id  = su .id
+        where su.username = #{userName}
+    </select>
+
+
+</mapper>
